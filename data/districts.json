@@ -1,0 +1,717 @@
+{
+  "districts": [
+    {
+      "id": 1,
+      "name": "Александровский район",
+      "depths": [40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150, 160, 170, 180],
+      "base_price": 2900,
+      "ground_types": {
+        "sand": {
+          "min_depth": 40,
+          "max_depth": 60,
+          "price_per_meter": 2900
+        },
+        "limestone": {
+          "min_depth": 60,
+          "max_depth": 180,
+          "price_per_meter": 3200
+        }
+      }
+    },
+    {
+      "id": 2,
+      "name": "Балашихинский район",
+      "depths": [15, 20, 25, 30, 35, 40, 45, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150, 160],
+      "base_price": 3100,
+      "ground_types": {
+        "sand": {
+          "min_depth": 15,
+          "max_depth": 40,
+          "price_per_meter": 3100
+        },
+        "limestone": {
+          "min_depth": 30,
+          "max_depth": 160,
+          "price_per_meter": 3400
+        }
+      }
+    },
+    {
+      "id": 3,
+      "name": "Бронницы",
+      "depths": [45, 50, 55, 60, 65],
+      "base_price": 2800,
+      "ground_types": {
+        "sand": {
+          "min_depth": 45,
+          "max_depth": 65,
+          "price_per_meter": 2800
+        }
+      }
+    },
+    {
+      "id": 4,
+      "name": "Видное",
+      "depths": [20, 25, 30, 35, 40, 45, 50, 60, 70, 80, 90, 100, 110, 120],
+      "base_price": 3000,
+      "ground_types": {
+        "sand": {
+          "min_depth": 20,
+          "max_depth": 30,
+          "price_per_meter": 3000
+        },
+        "limestone": {
+          "min_depth": 25,
+          "max_depth": 120,
+          "price_per_meter": 3300
+        }
+      }
+    },
+    {
+      "id": 5,
+      "name": "Волоколамский район",
+      "depths": [30, 35, 40, 45, 50, 55, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150, 160, 170, 180],
+      "base_price": 3200,
+      "ground_types": {
+        "sand": {
+          "min_depth": 30,
+          "max_depth": 60,
+          "price_per_meter": 3200
+        },
+        "limestone": {
+          "min_depth": 35,
+          "max_depth": 180,
+          "price_per_meter": 3500
+        }
+      }
+    },
+    {
+      "id": 6,
+      "name": "Воскресенский район",
+      "depths": [35, 40, 45, 50, 60, 70, 80, 90, 100],
+      "base_price": 3000,
+      "ground_types": {
+        "sand": {
+          "min_depth": 35,
+          "max_depth": 100,
+          "price_per_meter": 3000
+        }
+      }
+    },
+    {
+      "id": 7,
+      "name": "Дмитровский район",
+      "depths": [30, 35, 40, 45, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150, 160, 170, 180],
+      "base_price": 3100,
+      "ground_types": {
+        "sand": {
+          "min_depth": 30,
+          "max_depth": 50,
+          "price_per_meter": 3100
+        },
+        "limestone_shallow": {
+          "min_depth": 60,
+          "max_depth": 80,
+          "price_per_meter": 3400
+        },
+        "limestone_deep": {
+          "min_depth": 70,
+          "max_depth": 180,
+          "price_per_meter": 3600
+        }
+      }
+    },
+    {
+      "id": 8,
+      "name": "Домодедовский район",
+      "depths": [25, 30, 35, 40, 45, 50, 60, 70, 80, 90],
+      "base_price": 2900,
+      "ground_types": {
+        "sand": {
+          "min_depth": 25,
+          "max_depth": 90,
+          "price_per_meter": 2900
+        }
+      }
+    },
+    {
+      "id": 9,
+      "name": "Дубна",
+      "depths": [25, 30, 35, 40, 45, 50, 60, 70, 80, 90, 100, 110],
+      "base_price": 3200,
+      "ground_types": {
+        "sand": {
+          "min_depth": 25,
+          "max_depth": 50,
+          "price_per_meter": 3200
+        },
+        "limestone": {
+          "min_depth": 70,
+          "max_depth": 110,
+          "price_per_meter": 3500
+        }
+      }
+    },
+    {
+      "id": 10,
+      "name": "Егорьевский район",
+      "depths": [40, 45, 50, 60, 70, 80, 90, 100],
+      "base_price": 3000,
+      "ground_types": {
+        "sand": {
+          "min_depth": 40,
+          "max_depth": 100,
+          "price_per_meter": 3000
+        }
+      }
+    },
+    {
+      "id": 11,
+      "name": "Жуковский",
+      "depths": [50, 55, 60, 65, 70, 75, 80, 85],
+      "base_price": 3100,
+      "ground_types": {
+        "sand": {
+          "min_depth": 50,
+          "max_depth": 85,
+          "price_per_meter": 3100
+        }
+      }
+    },
+    {
+      "id": 12,
+      "name": "Зарайский район",
+      "depths": [45, 50, 55, 60, 70, 80, 90, 100, 110],
+      "base_price": 3000,
+      "ground_types": {
+        "sand": {
+          "min_depth": 45,
+          "max_depth": 110,
+          "price_per_meter": 3000
+        }
+      }
+    },
+    {
+      "id": 13,
+      "name": "Звенигород",
+      "depths": [15, 20, 25, 30, 35, 40, 45, 50, 60, 70, 80, 90, 100, 110, 120],
+      "base_price": 3200,
+      "ground_types": {
+        "sand": {
+          "min_depth": 15,
+          "max_depth": 30,
+          "price_per_meter": 3200
+        },
+        "limestone": {
+          "min_depth": 45,
+          "max_depth": 120,
+          "price_per_meter": 3500
+        }
+      }
+    },
+    {
+      "id": 14,
+      "name": "Ивантеевка",
+      "depths": [15, 20, 25, 30, 35, 40, 45, 50, 60, 70, 80, 90, 100, 110],
+      "base_price": 3100,
+      "ground_types": {
+        "sand": {
+          "min_depth": 15,
+          "max_depth": 40,
+          "price_per_meter": 3100
+        },
+        "limestone": {
+          "min_depth": 45,
+          "max_depth": 110,
+          "price_per_meter": 3400
+        }
+      }
+    },
+    {
+      "id": 15,
+      "name": "Истринский район",
+      "depths": [15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150, 160, 170, 180],
+      "base_price": 3200,
+      "ground_types": {
+        "sand": {
+          "min_depth": 15,
+          "max_depth": 40,
+          "price_per_meter": 3200
+        },
+        "limestone_shallow": {
+          "min_depth": 55,
+          "max_depth": 80,
+          "price_per_meter": 3500
+        },
+        "limestone_deep": {
+          "min_depth": 60,
+          "max_depth": 180,
+          "price_per_meter": 3700
+        }
+      }
+    },
+    {
+      "id": 16,
+      "name": "Каширский район",
+      "depths": [40, 45, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150],
+      "base_price": 3000,
+      "ground_types": {
+        "sand": {
+          "min_depth": 40,
+          "max_depth": 150,
+          "price_per_meter": 3000
+        }
+      }
+    },
+    {
+      "id": 17,
+      "name": "Климовск",
+      "depths": [45, 50, 55, 60, 65, 70, 75],
+      "base_price": 3100,
+      "ground_types": {
+        "sand": {
+          "min_depth": 45,
+          "max_depth": 75,
+          "price_per_meter": 3100
+        }
+      }
+    },
+    {
+      "id": 18,
+      "name": "Клинский район",
+      "depths": [30, 35, 40, 45, 50, 55, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150, 160, 170, 180],
+      "base_price": 3200,
+      "ground_types": {
+        "sand": {
+          "min_depth": 30,
+          "max_depth": 50,
+          "price_per_meter": 3200
+        },
+        "limestone_shallow": {
+          "min_depth": 60,
+          "max_depth": 80,
+          "price_per_meter": 3500
+        },
+        "limestone_deep": {
+          "min_depth": 70,
+          "max_depth": 180,
+          "price_per_meter": 3700
+        }
+      }
+    },
+    {
+      "id": 19,
+      "name": "Коломенский район",
+      "depths": [45, 50, 55, 60, 65, 70, 75, 80, 85, 90],
+      "base_price": 3000,
+      "ground_types": {
+        "sand": {
+          "min_depth": 45,
+          "max_depth": 90,
+          "price_per_meter": 3000
+        }
+      }
+    },
+    {
+      "id": 20,
+      "name": "Королёв",
+      "depths": [45, 50, 55, 60, 65, 70],
+      "base_price": 3100,
+      "ground_types": {
+        "sand": {
+          "min_depth": 45,
+          "max_depth": 70,
+          "price_per_meter": 3100
+        }
+      }
+    },
+    {
+      "id": 21,
+      "name": "Красногорский район",
+      "depths": [60, 70, 80, 90, 100, 110, 120],
+      "base_price": 3300,
+      "ground_types": {
+        "limestone": {
+          "min_depth": 60,
+          "max_depth": 120,
+          "price_per_meter": 3300
+        }
+      }
+    },
+    {
+      "id": 22,
+      "name": "Ленинский район",
+      "depths": [20, 25, 30, 35, 40, 45, 50, 60, 70, 80, 90, 100, 110, 120],
+      "base_price": 3000,
+      "ground_types": {
+        "sand": {
+          "min_depth": 20,
+          "max_depth": 30,
+          "price_per_meter": 3000
+        },
+        "limestone": {
+          "min_depth": 25,
+          "max_depth": 120,
+          "price_per_meter": 3300
+        }
+      }
+    },
+    {
+      "id": 23,
+      "name": "Лотошинский район",
+      "depths": [25, 30, 35, 40, 45, 50, 55, 60, 70, 80, 90, 100, 110, 120],
+      "base_price": 3200,
+      "ground_types": {
+        "sand": {
+          "min_depth": 25,
+          "max_depth": 50,
+          "price_per_meter": 3200
+        },
+        "limestone": {
+          "min_depth": 45,
+          "max_depth": 120,
+          "price_per_meter": 3500
+        }
+      }
+    },
+    {
+      "id": 24,
+      "name": "Луховицкий район",
+      "depths": [15, 20, 25, 30, 35, 40, 45, 50, 60, 70, 80, 90, 100],
+      "base_price": 3000,
+      "ground_types": {
+        "sand": {
+          "min_depth": 15,
+          "max_depth": 30,
+          "price_per_meter": 3000
+        },
+        "limestone": {
+          "min_depth": 30,
+          "max_depth": 100,
+          "price_per_meter": 3300
+        }
+      }
+    },
+    {
+      "id": 25,
+      "name": "Люберцы",
+      "depths": [10, 15, 20, 25, 30, 35, 40, 45, 50, 60, 70, 80, 90, 100],
+      "base_price": 3100,
+      "ground_types": {
+        "sand": {
+          "min_depth": 10,
+          "max_depth": 20,
+          "price_per_meter": 3100
+        },
+        "limestone": {
+          "min_depth": 25,
+          "max_depth": 100,
+          "price_per_meter": 3400
+        }
+      }
+    },
+    {
+      "id": 26,
+      "name": "Можайский район",
+      "depths": [25, 30, 35, 40, 45, 50, 55, 60, 70, 80, 90, 100, 110, 120, 130],
+      "base_price": 3200,
+      "ground_types": {
+        "sand": {
+          "min_depth": 25,
+          "max_depth": 50,
+          "price_per_meter": 3200
+        },
+        "limestone": {
+          "min_depth": 45,
+          "max_depth": 130,
+          "price_per_meter": 3500
+        }
+      }
+    },
+    {
+      "id": 27,
+      "name": "Наро-Фоминский район",
+      "depths": [15, 20, 25, 30, 35, 40, 45, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140],
+      "base_price": 3200,
+      "ground_types": {
+        "sand": {
+          "min_depth": 15,
+          "max_depth": 40,
+          "price_per_meter": 3200
+        },
+        "limestone": {
+          "min_depth": 25,
+          "max_depth": 140,
+          "price_per_meter": 3500
+        }
+      }
+    },
+    {
+      "id": 28,
+      "name": "Ногинский район",
+      "depths": [15, 20, 25, 30, 35, 40, 45, 50, 60, 70, 80, 90, 100],
+      "base_price": 3100,
+      "ground_types": {
+        "sand": {
+          "min_depth": 15,
+          "max_depth": 30,
+          "price_per_meter": 3100
+        },
+        "limestone": {
+          "min_depth": 20,
+          "max_depth": 100,
+          "price_per_meter": 3400
+        }
+      }
+    },
+    {
+      "id": 29,
+      "name": "Одинцовский район",
+      "depths": [15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150, 160],
+      "base_price": 3200,
+      "ground_types": {
+        "sand": {
+          "min_depth": 15,
+          "max_depth": 50,
+          "price_per_meter": 3200
+        },
+        "limestone": {
+          "min_depth": 40,
+          "max_depth": 160,
+          "price_per_meter": 3500
+        }
+      }
+    },
+    {
+      "id": 30,
+      "name": "Пушкинский район",
+      "depths": [15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 70, 80, 90, 100, 110, 120],
+      "base_price": 3100,
+      "ground_types": {
+        "sand": {
+          "min_depth": 15,
+          "max_depth": 60,
+          "price_per_meter": 3100
+        },
+        "limestone": {
+          "min_depth": 45,
+          "max_depth": 120,
+          "price_per_meter": 3400
+        }
+      }
+    },
+    {
+      "id": 31,
+      "name": "Раменский район",
+      "depths": [15, 20, 25, 30, 35, 40, 45, 50, 60, 70, 80, 90, 100, 110, 120],
+      "base_price": 3100,
+      "ground_types": {
+        "sand": {
+          "min_depth": 15,
+          "max_depth": 30,
+          "price_per_meter": 3100
+        },
+        "limestone": {
+          "min_depth": 15,
+          "max_depth": 120,
+          "price_per_meter": 3400
+        }
+      }
+    },
+    {
+      "id": 32,
+      "name": "Рублёво",
+      "depths": [15, 20, 25, 30, 35, 40, 45, 50, 60, 70, 80, 90, 100, 110],
+      "base_price": 3300,
+      "ground_types": {
+        "sand": {
+          "min_depth": 15,
+          "max_depth": 40,
+          "price_per_meter": 3300
+        },
+        "limestone": {
+          "min_depth": 60,
+          "max_depth": 110,
+          "price_per_meter": 3600
+        }
+      }
+    },
+    {
+      "id": 33,
+      "name": "Рузский район",
+      "depths": [15, 20, 25, 30, 35, 40, 45, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150, 160, 170, 180],
+      "base_price": 3200,
+      "ground_types": {
+        "sand": {
+          "min_depth": 15,
+          "max_depth": 40,
+          "price_per_meter": 3200
+        },
+        "limestone": {
+          "min_depth": 20,
+          "max_depth": 180,
+          "price_per_meter": 3500
+        }
+      }
+    },
+    {
+      "id": 34,
+      "name": "Сергиево-Посадский район",
+      "depths": [
+        15, 20, 25, 30, 35, 40, 45, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150, 160, 170, 180, 190, 200, 210, 220,
+        230, 240, 250
+      ],
+      "base_price": 3100,
+      "ground_types": {
+        "sand": {
+          "min_depth": 15,
+          "max_depth": 40,
+          "price_per_meter": 3100
+        },
+        "limestone_shallow": {
+          "min_depth": 50,
+          "max_depth": 90,
+          "price_per_meter": 3400
+        },
+        "limestone_deep": {
+          "min_depth": 70,
+          "max_depth": 250,
+          "price_per_meter": 3600
+        }
+      }
+    },
+    {
+      "id": 35,
+      "name": "Серебряно-Прудский район",
+      "depths": [50, 60, 70, 80, 90, 100],
+      "base_price": 3000,
+      "ground_types": {
+        "sand": {
+          "min_depth": 50,
+          "max_depth": 100,
+          "price_per_meter": 3000
+        }
+      }
+    },
+    {
+      "id": 36,
+      "name": "Серпуховский район",
+      "depths": [25, 30, 35, 40, 45, 50, 60, 70, 80, 90, 100, 110, 120, 130],
+      "base_price": 3000,
+      "ground_types": {
+        "sand": {
+          "min_depth": 25,
+          "max_depth": 130,
+          "price_per_meter": 3000
+        }
+      }
+    },
+    {
+      "id": 37,
+      "name": "Ступинский район",
+      "depths": [15, 20, 25, 30, 35, 40, 45, 50, 60, 70, 80, 90, 100],
+      "base_price": 3000,
+      "ground_types": {
+        "sand": {
+          "min_depth": 15,
+          "max_depth": 100,
+          "price_per_meter": 3000
+        }
+      }
+    },
+    {
+      "id": 38,
+      "name": "Щёлковский район",
+      "depths": [10, 15, 20, 25, 30, 35, 40, 45, 50, 60, 70, 80, 90],
+      "base_price": 3100,
+      "ground_types": {
+        "sand": {
+          "min_depth": 10,
+          "max_depth": 30,
+          "price_per_meter": 3100
+        },
+        "limestone": {
+          "min_depth": 15,
+          "max_depth": 90,
+          "price_per_meter": 3400
+        }
+      }
+    },
+    {
+      "id": 39,
+      "name": "Талдомский район",
+      "depths": [15, 20, 25, 30, 35, 40, 45, 50, 60, 70, 80, 90, 100, 110, 120, 130],
+      "base_price": 3200,
+      "ground_types": {
+        "sand": {
+          "min_depth": 15,
+          "max_depth": 50,
+          "price_per_meter": 3200
+        },
+        "limestone": {
+          "min_depth": 60,
+          "max_depth": 130,
+          "price_per_meter": 3500
+        }
+      }
+    },
+    {
+      "id": 40,
+      "name": "Чеховский район",
+      "depths": [30, 35, 40, 45, 50, 55, 60],
+      "base_price": 3000,
+      "ground_types": {
+        "sand": {
+          "min_depth": 30,
+          "max_depth": 60,
+          "price_per_meter": 3000
+        }
+      }
+    },
+    {
+      "id": 41,
+      "name": "Шаховский район",
+      "depths": [15, 20, 25, 30, 35, 40, 45, 50, 60, 70, 80, 90, 100, 110, 120, 130],
+      "base_price": 3200,
+      "ground_types": {
+        "sand": {
+          "min_depth": 15,
+          "max_depth": 40,
+          "price_per_meter": 3200
+        },
+        "limestone": {
+          "min_depth": 50,
+          "max_depth": 130,
+          "price_per_meter": 3500
+        }
+      }
+    },
+    {
+      "id": 42,
+      "name": "Электросталь",
+      "depths": [25, 30, 35, 40, 45, 50, 55, 60],
+      "base_price": 3100,
+      "ground_types": {
+        "sand": {
+          "min_depth": 25,
+          "max_depth": 60,
+          "price_per_meter": 3100
+        }
+      }
+    },
+    {
+      "id": 43,
+      "name": "Электроугли",
+      "depths": [25, 30, 35, 40, 45, 50, 55, 60],
+      "base_price": 3100,
+      "ground_types": {
+        "sand": {
+          "min_depth": 25,
+          "max_depth": 60,
+          "price_per_meter": 3100
+        }
+      }
+    }
+  ]
+}
+
