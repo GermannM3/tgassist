@@ -1,0 +1,21 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "api/index.py",
+      "use": "@vercel/python"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "/api/index.py"
+    }
+  ],
+  "env": {
+    "BOT_TOKEN": "@bot_token",
+    "API_HOST": "0.0.0.0",
+    "API_PORT": "8000",
+    "ADMIN_ID": "@admin_id"
+  }
+} 
