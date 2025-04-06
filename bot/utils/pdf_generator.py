@@ -11,9 +11,10 @@ import io # Для работы с байтами в памяти
 # Получаем токен из переменных окружения
 BLOB_READ_WRITE_TOKEN = os.environ.get('BLOB_READ_WRITE_TOKEN')
 
-# Путь к шрифту (предполагаем, что он будет в корне проекта в папке fonts)
-# Render скачает его при сборке
-FONT_PATH = "fonts/DejaVuSansCondensed.ttf"
+# Пути к шрифтам
+FONT_DIR = "fonts"
+FONT_REGULAR_PATH = os.path.join(FONT_DIR, "DejaVuSansCondensed.ttf")
+FONT_BOLD_PATH = os.path.join(FONT_DIR, "DejaVuSansCondensed-Bold.ttf") # Добавили путь к жирному
 
 # Функция для генерации PDF заказа
 def generate_order_pdf(order_data: dict) -> str | None:
@@ -25,10 +26,14 @@ def generate_order_pdf(order_data: dict) -> str | None:
         print("Ошибка: Токен BLOB_READ_WRITE_TOKEN не найден в переменных окружения.")
         return None
 
-    # Проверяем наличие файла шрифта
-    if not os.path.exists(FONT_PATH):
-        print(f"Ошибка: Файл шрифта не найден по пути {FONT_PATH}")
+    # Проверяем наличие файлов шрифтов
+    fonts_available = os.path.exists(FONT_REGULAR_PATH) and os.path.exists(FONT_BOLD_PATH)
+    use_dejavu = True
+
+    if not fonts_available:
+        print(f"Ошибка: Файлы шрифтов DejaVu не найдены в {FONT_DIR}")
         # Пытаемся использовать Arial как запасной вариант
+        use_dejavu = False
         try:
             pdf = FPDF()
             pdf.add_page()
@@ -41,19 +46,36 @@ def generate_order_pdf(order_data: dict) -> str | None:
         # Создание PDF в памяти
         pdf = FPDF()
         pdf.add_page()
-        # Добавляем шрифт DejaVu
-        pdf.add_font('DejaVu', '', FONT_PATH, uni=True)
-        pdf.set_font('DejaVu', '', 12) # Устанавливаем DejaVu по умолчанию
+        # Добавляем ОБА шрифта: обычный и жирный
+        try:
+            pdf.add_font('DejaVu', '', FONT_REGULAR_PATH, uni=True)
+            pdf.add_font('DejaVu', 'B', FONT_BOLD_PATH, uni=True) # Добавляем жирный стиль
+            pdf.set_font('DejaVu', '', 12) # Устанавливаем DejaVu по умолчанию
+        except Exception as e:
+            print(f"Критическая ошибка при добавлении шрифтов DejaVu: {e}")
+            print("Попытка использовать Arial...")
+            use_dejavu = False
+            try:
+                pdf = FPDF()
+                pdf.add_page()
+                pdf.set_font('Arial', '', 12)
+                print("Предупреждение: Используется запасной шрифт Arial.")
+            except RuntimeError:
+                print("Критическая ошибка: Ни DejaVu, ни Arial не доступны.")
+                return None
+
+    # Определяем имя шрифта для использования (DejaVu или Arial)
+    font_family = 'DejaVu' if use_dejavu else 'Arial'
 
     # Заголовок
-    pdf.set_font('DejaVu', 'B', 16) # Используем жирный DejaVu
+    pdf.set_font(font_family, 'B', 16) # Используем жирный стиль выбранного шрифта
     pdf.cell(0, 10, 'Заказ на бурение скважины', ln=True, align='C')
     pdf.ln(10)
 
     # Основная информация
-    pdf.set_font('DejaVu', 'B', 14)
+    pdf.set_font(font_family, 'B', 14)
     pdf.cell(0, 10, 'Информация о заказе:', ln=True)
-    pdf.set_font('DejaVu', '', 12)
+    pdf.set_font(font_family, '', 12)
 
     # Данные заказа
     data = [
@@ -72,14 +94,14 @@ def generate_order_pdf(order_data: dict) -> str | None:
     pdf.ln(5)
 
     # Оборудование
-    equipment_details = order_data.get("equipment_details", [])
+    equipment_details = order_data.get("equipment_details", []) # Эта переменная сейчас не используется, но оставим
     adapter_info = order_data.get("adapter_info", {})
     caisson_info = order_data.get("caisson_info", {})
 
-    if equipment_details or adapter_info or caisson_info:
-        pdf.set_font('DejaVu', 'B', 14)
+    if adapter_info or caisson_info:
+        pdf.set_font(font_family, 'B', 14)
         pdf.cell(0, 10, 'Выбранное оборудование:', ln=True)
-        pdf.set_font('DejaVu', '', 12)
+        pdf.set_font(font_family, '', 12)
 
         if adapter_info:
             pdf.cell(0, 10, f"Адаптер: {adapter_info.get('name', 'Не указан')} - {adapter_info.get('price', 0)} ₽", ln=True)
@@ -91,14 +113,14 @@ def generate_order_pdf(order_data: dict) -> str | None:
         pdf.ln(5)
 
     # Общая стоимость
-    pdf.set_font('DejaVu', 'B', 14)
+    pdf.set_font(font_family, 'B', 14)
     pdf.cell(0, 10, f"ОБЩАЯ СТОИМОСТЬ: {str(order_data.get('total_cost', 0))} ₽", ln=True)
     pdf.ln(10)
 
     # Информация о клиенте
-    pdf.set_font('DejaVu', 'B', 14)
+    pdf.set_font(font_family, 'B', 14)
     pdf.cell(0, 10, 'Информация о клиенте:', ln=True)
-    pdf.set_font('DejaVu', '', 12)
+    pdf.set_font(font_family, '', 12)
 
     pdf.cell(0, 10, f"ФИО: {str(order_data.get('full_name', 'Не указано'))}", ln=True)
     pdf.cell(0, 10, f"Телефон: {str(order_data.get('phone', 'Не указан'))}", ln=True)
@@ -107,9 +129,11 @@ def generate_order_pdf(order_data: dict) -> str | None:
     try:
         pdf_bytes = pdf.output(dest='S').encode('latin-1')
     except UnicodeEncodeError:
-        # Если latin-1 не сработал (маловероятно с DejaVu, но на всякий случай)
         print("Предупреждение: Ошибка кодирования PDF в latin-1, пробую UTF-8")
         pdf_bytes = pdf.output(dest='S').encode('utf-8')
+    except Exception as e:
+        print(f"Критическая ошибка при генерации байтов PDF: {e}")
+        return None
 
     # Имя файла в Blob хранилище
     filename = f"orders/order_{order_data.get('order_id', int(time.time()))}.pdf"
