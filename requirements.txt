@@ -5,4 +5,5 @@ requests
 fpdf2
 vercel-blob
 matplotlib
-python-dotenv 
+python-dotenv
+PyPDF2 
