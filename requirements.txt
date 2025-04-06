@@ -6,4 +6,5 @@ fpdf2
 vercel-blob
 matplotlib
 python-dotenv
-PyPDF2 
+PyPDF2
+python-multipart 
