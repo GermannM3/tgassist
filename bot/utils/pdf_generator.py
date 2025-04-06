@@ -11,7 +11,11 @@ import io # Для работы с байтами в памяти
 # Получаем токен из переменных окружения
 BLOB_READ_WRITE_TOKEN = os.environ.get('BLOB_READ_WRITE_TOKEN')
 
-# Функция для генерации PDF заказа (уже исправлена)
+# Путь к шрифту (предполагаем, что он будет в корне проекта в папке fonts)
+# Render скачает его при сборке
+FONT_PATH = "fonts/DejaVuSansCondensed.ttf"
+
+# Функция для генерации PDF заказа
 def generate_order_pdf(order_data: dict) -> str | None:
     """
     Генерация PDF-файла с данными заказа и загрузка в Vercel Blob
@@ -21,20 +25,35 @@ def generate_order_pdf(order_data: dict) -> str | None:
         print("Ошибка: Токен BLOB_READ_WRITE_TOKEN не найден в переменных окружения.")
         return None
 
-    # Создание PDF в памяти
-    pdf = FPDF()
-    pdf.add_page()
-    pdf.set_font('Arial', '', 12)
+    # Проверяем наличие файла шрифта
+    if not os.path.exists(FONT_PATH):
+        print(f"Ошибка: Файл шрифта не найден по пути {FONT_PATH}")
+        # Пытаемся использовать Arial как запасной вариант
+        try:
+            pdf = FPDF()
+            pdf.add_page()
+            pdf.set_font('Arial', '', 12) # Используем Arial
+            print("Предупреждение: Используется запасной шрифт Arial.")
+        except RuntimeError:
+             print("Критическая ошибка: Ни DejaVu, ни Arial не доступны.")
+             return None # Не можем создать PDF
+    else:
+        # Создание PDF в памяти
+        pdf = FPDF()
+        pdf.add_page()
+        # Добавляем шрифт DejaVu
+        pdf.add_font('DejaVu', '', FONT_PATH, uni=True)
+        pdf.set_font('DejaVu', '', 12) # Устанавливаем DejaVu по умолчанию
 
     # Заголовок
-    pdf.set_font('Arial', 'B', 16)
+    pdf.set_font('DejaVu', 'B', 16) # Используем жирный DejaVu
     pdf.cell(0, 10, 'Заказ на бурение скважины', ln=True, align='C')
     pdf.ln(10)
 
     # Основная информация
-    pdf.set_font('Arial', 'B', 14)
+    pdf.set_font('DejaVu', 'B', 14)
     pdf.cell(0, 10, 'Информация о заказе:', ln=True)
-    pdf.set_font('Arial', '', 12)
+    pdf.set_font('DejaVu', '', 12)
 
     # Данные заказа
     data = [
@@ -58,9 +77,9 @@ def generate_order_pdf(order_data: dict) -> str | None:
     caisson_info = order_data.get("caisson_info", {})
 
     if equipment_details or adapter_info or caisson_info:
-        pdf.set_font('Arial', 'B', 14)
+        pdf.set_font('DejaVu', 'B', 14)
         pdf.cell(0, 10, 'Выбранное оборудование:', ln=True)
-        pdf.set_font('Arial', '', 12)
+        pdf.set_font('DejaVu', '', 12)
 
         if adapter_info:
             pdf.cell(0, 10, f"Адаптер: {adapter_info.get('name', 'Не указан')} - {adapter_info.get('price', 0)} ₽", ln=True)
@@ -72,20 +91,25 @@ def generate_order_pdf(order_data: dict) -> str | None:
         pdf.ln(5)
 
     # Общая стоимость
-    pdf.set_font('Arial', 'B', 14)
+    pdf.set_font('DejaVu', 'B', 14)
     pdf.cell(0, 10, f"ОБЩАЯ СТОИМОСТЬ: {str(order_data.get('total_cost', 0))} ₽", ln=True)
     pdf.ln(10)
 
     # Информация о клиенте
-    pdf.set_font('Arial', 'B', 14)
+    pdf.set_font('DejaVu', 'B', 14)
     pdf.cell(0, 10, 'Информация о клиенте:', ln=True)
-    pdf.set_font('Arial', '', 12)
+    pdf.set_font('DejaVu', '', 12)
 
     pdf.cell(0, 10, f"ФИО: {str(order_data.get('full_name', 'Не указано'))}", ln=True)
     pdf.cell(0, 10, f"Телефон: {str(order_data.get('phone', 'Не указан'))}", ln=True)
 
     # Получение PDF как байтов
-    pdf_bytes = pdf.output(dest='S').encode('latin-1')
+    try:
+        pdf_bytes = pdf.output(dest='S').encode('latin-1')
+    except UnicodeEncodeError:
+        # Если latin-1 не сработал (маловероятно с DejaVu, но на всякий случай)
+        print("Предупреждение: Ошибка кодирования PDF в latin-1, пробую UTF-8")
+        pdf_bytes = pdf.output(dest='S').encode('utf-8')
 
     # Имя файла в Blob хранилище
     filename = f"orders/order_{order_data.get('order_id', int(time.time()))}.pdf"
@@ -109,20 +133,5 @@ def generate_analytics_pdf(analytics_data):
     Генерация PDF-файла с аналитикой (Требует переписывания на fpdf2)
     """
     print("Предупреждение: Функция generate_analytics_pdf еще не реализована с fpdf2.")
-    # Тут должен быть код генерации PDF аналитики с использованием FPDF
-    # В данный момент возвращаем None или можем создать пустой PDF как заглушку
     return None
-    # Пример заглушки с пустым PDF:
-    # pdf = FPDF()
-    # pdf.add_page()
-    # pdf.set_font('Arial', '', 12)
-    # pdf.cell(0, 10, 'Аналитика (в разработке)', ln=True, align='C')
-    # pdf_bytes = pdf.output(dest='S').encode('latin-1')
-    # filename = f"analytics/analytics_{int(time.time())}.pdf"
-    # try:
-    #     blob_result = put(pathname=filename, body=pdf_bytes, options={'token': BLOB_READ_WRITE_TOKEN})
-    #     return blob_result['url']
-    # except Exception as e:
-    #     print(f"Ошибка при загрузке заглушки PDF аналитики: {e}")
-    #     return None
 
