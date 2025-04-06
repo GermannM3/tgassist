@@ -14,6 +14,12 @@ from datetime import datetime
 import matplotlib.pyplot as plt
 import matplotlib
 matplotlib.use('Agg')  # Использование Agg бэкенда для работы без GUI
+from fpdf import FPDF
+from vercel_blob import put # Импортируем функцию put
+import io # Для работы с байтами в памяти
+
+# Получаем токен из переменных окружения
+BLOB_READ_WRITE_TOKEN = os.environ.get('BLOB_READ_WRITE_TOKEN')
 
 # Регистрация шрифтов
 def register_fonts():
@@ -38,70 +44,30 @@ def register_fonts():
         # pdfmetrics.registerFont(TTFont('Times-Roman', 'Times-Roman')) 
         # pdfmetrics.registerFont(TTFont('Times-Bold', 'Times-Bold'))
 
-def generate_order_pdf(order_data: dict) -> str:
+def generate_order_pdf(order_data: dict) -> str | None:
     """
-    Генерация PDF-файла с данными заказа
+    Генерация PDF-файла с данными заказа и загрузка в Vercel Blob
+    Возвращает URL файла в Vercel Blob или None в случае ошибки.
     """
-    # Регистрация шрифтов перед созданием документа
-    register_fonts()
-    
-    # Создание директории для PDF, если её нет
-    pdf_dir = os.path.join("data", "pdf")
-    os.makedirs(pdf_dir, exist_ok=True)
-    
-    # Путь к файлу
-    filename = f"order_{int(time.time())}.pdf"
-    filepath = os.path.join(pdf_dir, filename)
-    
-    # Создание документа
-    doc = SimpleDocTemplate(
-        filepath,
-        pagesize=A4,
-        rightMargin=72,
-        leftMargin=72,
-        topMargin=72,
-        bottomMargin=72
-    )
-    
-    # Содержимое документа
-    content = []
-    
-    # Создание стилей
-    styles = getSampleStyleSheet()
-    
-    # Создание стилей с поддержкой кириллицы
-    styles.add(ParagraphStyle(
-        name='RussianTitle',
-        parent=styles['Heading1'],
-        fontName='DejaVuSans-Bold',
-        fontSize=18,
-        alignment=1,
-        spaceAfter=12
-    ))
-    
-    styles.add(ParagraphStyle(
-        name='RussianHeading',
-        parent=styles['Heading2'],
-        fontName='DejaVuSans-Bold',
-        fontSize=14,
-        spaceAfter=6
-    ))
-    
-    styles.add(ParagraphStyle(
-        name='RussianNormal',
-        parent=styles['Normal'],
-        fontName='DejaVuSans',
-        fontSize=12
-    ))
-    
+    if not BLOB_READ_WRITE_TOKEN:
+        print("Ошибка: Токен BLOB_READ_WRITE_TOKEN не найден в переменных окружения.")
+        return None
+
+    # Создание PDF в памяти
+    pdf = FPDF()
+    pdf.add_page()
+    pdf.set_font('Arial', '', 12)
+
     # Заголовок
-    content.append(Paragraph("Заказ на бурение скважины", styles['RussianTitle']))
-    content.append(Spacer(1, 12))
-    
+    pdf.set_font('Arial', 'B', 16)
+    pdf.cell(0, 10, 'Заказ на бурение скважины', ln=True, align='C')
+    pdf.ln(10)
+
     # Основная информация
-    content.append(Paragraph("<b>Информация о заказе:</b>", styles['RussianHeading']))
-    content.append(Spacer(1, 6))
-    
+    pdf.set_font('Arial', 'B', 14)
+    pdf.cell(0, 10, 'Информация о заказе:', ln=True)
+    pdf.set_font('Arial', '', 12)
+
     # Данные заказа
     data = [
         ["№ заказа:", str(order_data.get("order_id", "Не указан"))],
@@ -112,91 +78,65 @@ def generate_order_pdf(order_data: dict) -> str:
         ["Цена за метр:", f"{str(order_data.get('price_per_meter', 0))} ₽"],
         ["Стоимость бурения:", f"{str(order_data.get('drilling_cost', 0))} ₽"]
     ]
-    
-    # Создание таблицы
-    table = Table(data, colWidths=[200, 250])
-    table.setStyle(TableStyle([
-        ('VALIGN', (0, 0), (-1, -1), 'TOP'),
-        ('ALIGN', (0, 0), (0, -1), 'RIGHT'),
-        ('ALIGN', (1, 0), (1, -1), 'LEFT'),
-        ('FONTNAME', (0, 0), (0, -1), 'DejaVuSans-Bold'),
-        ('FONTNAME', (1, 0), (1, -1), 'DejaVuSans'),
-        ('BOTTOMPADDING', (0, 0), (-1, -1), 6),
-    ]))
-    
-    content.append(table)
-    content.append(Spacer(1, 20))
-    
+    # Вывод данных заказа
+    for item in data:
+        pdf.cell(60, 10, item[0], border=0)
+        pdf.cell(0, 10, item[1], border=0, ln=True)
+    pdf.ln(5)
+
     # Оборудование
     equipment_details = order_data.get("equipment_details", [])
     adapter_info = order_data.get("adapter_info", {})
     caisson_info = order_data.get("caisson_info", {})
-    
+
     if equipment_details or adapter_info or caisson_info:
-        content.append(Paragraph("<b>Выбранное оборудование:</b>", styles['RussianHeading']))
-        content.append(Spacer(1, 6))
-        
-        equipment_data = []
-        
+        pdf.set_font('Arial', 'B', 14)
+        pdf.cell(0, 10, 'Выбранное оборудование:', ln=True)
+        pdf.set_font('Arial', '', 12)
+
         if adapter_info:
-            equipment_data.append(["Адаптер:", f"{adapter_info.get('name', 'Не указан')} - {adapter_info.get('price', 0)} ₽"])
-            equipment_data.append(["Описание:", adapter_info.get('description', '')])
-        
+            pdf.cell(0, 10, f"Адаптер: {adapter_info.get('name', 'Не указан')} - {adapter_info.get('price', 0)} ₽", ln=True)
+            # pdf.cell(0, 10, f"Описание: {adapter_info.get('description', '')}", ln=True) # Убрал описание для краткости
+
         if caisson_info:
-            equipment_data.append(["Кессон:", f"{caisson_info.get('name', 'Не указан')} - {caisson_info.get('price', 0)} ₽"])
-            equipment_data.append(["Описание:", caisson_info.get('description', '')])
-        
-        equipment_data.append(["Стоимость оборудования:", f"{str(order_data.get('equipment_cost', 0))} ₽"])
-        
-        equipment_table = Table(equipment_data, colWidths=[200, 250])
-        equipment_table.setStyle(TableStyle([
-            ('VALIGN', (0, 0), (-1, -1), 'TOP'),
-            ('ALIGN', (0, 0), (0, -1), 'RIGHT'),
-            ('ALIGN', (1, 0), (1, -1), 'LEFT'),
-            ('FONTNAME', (0, 0), (0, -1), 'DejaVuSans-Bold'),
-            ('FONTNAME', (1, 0), (1, -1), 'DejaVuSans'),
-            ('BOTTOMPADDING', (0, 0), (-1, -1), 6),
-        ]))
-        
-        content.append(equipment_table)
-        content.append(Spacer(1, 20))
-    
+            pdf.cell(0, 10, f"Кессон: {caisson_info.get('name', 'Не указан')} - {caisson_info.get('price', 0)} ₽", ln=True)
+            # pdf.cell(0, 10, f"Описание: {caisson_info.get('description', '')}", ln=True) # Убрал описание для краткости
+
+        pdf.cell(0, 10, f"Стоимость оборудования: {str(order_data.get('equipment_cost', 0))} ₽", ln=True)
+        pdf.ln(5)
+
     # Общая стоимость
-    total_cost = str(order_data.get('total_cost', 0))
-    total_cost_text = f"<b>ОБЩАЯ СТОИМОСТЬ: {total_cost} ₽</b>"
-    content.append(Paragraph(total_cost_text, styles['RussianHeading']))
-    content.append(Spacer(1, 20))
-    
+    pdf.set_font('Arial', 'B', 14)
+    pdf.cell(0, 10, f"ОБЩАЯ СТОИМОСТЬ: {str(order_data.get('total_cost', 0))} ₽", ln=True)
+    pdf.ln(10)
+
     # Информация о клиенте
-    content.append(Paragraph("<b>Информация о клиенте:</b>", styles['RussianHeading']))
-    content.append(Spacer(1, 6))
-    
-    client_data = [
-        ["ФИО:", str(order_data.get('full_name', 'Не указано'))],
-        ["Телефон:", str(order_data.get('phone', 'Не указан'))]
-    ]
-    
-    client_table = Table(client_data, colWidths=[200, 250])
-    client_table.setStyle(TableStyle([
-        ('VALIGN', (0, 0), (-1, -1), 'TOP'),
-        ('ALIGN', (0, 0), (0, -1), 'RIGHT'),
-        ('ALIGN', (1, 0), (1, -1), 'LEFT'),
-        ('FONTNAME', (0, 0), (0, -1), 'DejaVuSans-Bold'),
-        ('FONTNAME', (1, 0), (1, -1), 'DejaVuSans'),
-        ('BOTTOMPADDING', (0, 0), (-1, -1), 6),
-    ]))
-    
-    content.append(client_table)
-    
-    # Добавление даты и времени генерации документа
-    content.append(Spacer(1, 20))
-    current_time = datetime.now().strftime("%d.%m.%Y %H:%M:%S")
-    content.append(Paragraph(f"Документ сгенерирован: {current_time}", styles['RussianNormal']))
-    
-    # Сборка документа
-    doc.build(content)
-    
-    return filepath
+    pdf.set_font('Arial', 'B', 14)
+    pdf.cell(0, 10, 'Информация о клиенте:', ln=True)
+    pdf.set_font('Arial', '', 12)
+
+    pdf.cell(0, 10, f"ФИО: {str(order_data.get('full_name', 'Не указано'))}", ln=True)
+    pdf.cell(0, 10, f"Телефон: {str(order_data.get('phone', 'Не указан'))}", ln=True)
+    # ... (конец кода заполнения PDF)
+
+    # Получение PDF как байтов
+    pdf_bytes = pdf.output(dest='S').encode('latin-1')
+
+    # Имя файла в Blob хранилище
+    filename = f"orders/order_{order_data.get('order_id', int(time.time()))}.pdf"
+
+    try:
+        # Загрузка в Vercel Blob
+        blob_result = put(
+            pathname=filename,
+            body=pdf_bytes,
+            options={'token': BLOB_READ_WRITE_TOKEN} # Передаем токен
+        )
+        print(f"PDF успешно загружен: {blob_result['url']}")
+        return blob_result['url'] # Возвращаем URL загруженного файла
+    except Exception as e:
+        print(f"Ошибка при загрузке PDF в Vercel Blob: {e}")
+        return None
 
 def generate_analytics_pdf(analytics_data):
     """
