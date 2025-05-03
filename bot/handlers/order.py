@@ -121,13 +121,13 @@ async def process_contact_info(message: Message, state: FSMContext, bot: Bot):
     
     # Генерация PDF с деталями заказа
     try:
-        pdf_path = generate_order_pdf(order_data)
+    pdf_path = generate_order_pdf(order_data)
         pdf_exists = True
     except Exception as e:
         logging.error(f"Ошибка при создании PDF для заказа {order_id}: {e}")
         pdf_path = None
         pdf_exists = False
-
+    
     # Формирование сообщения для пользователя
     user_message = (
         f"✅ <b>Заказ #{order_id} успешно оформлен!</b>\n\n"
@@ -146,10 +146,10 @@ async def process_contact_info(message: Message, state: FSMContext, bot: Bot):
     # Отправка PDF-файла пользователю, если он создан
     if pdf_exists and pdf_path:
         try:
-            await message.answer_document(
+        await message.answer_document(
                 document=FSInputFile(pdf_path),
-                caption=f"📄 Детали заказа #{order_id}"
-            )
+            caption=f"📄 Детали заказа #{order_id}"
+        )
         except Exception as e:
              logging.error(f"Ошибка при отправке PDF пользователю {message.from_user.id} для заказа {order_id}: {e}")
 
@@ -186,7 +186,7 @@ async def process_contact_info(message: Message, state: FSMContext, bot: Bot):
              )
     except Exception as e:
         logging.error(f"Ошибка при отправке уведомления менеджеру в канал {MANAGER_CHANNEL_ID} для заказа {order_id}: {e}")
-
+    
     # Сброс состояния
     await state.clear()
     

@@ -66,7 +66,7 @@ def generate_order_pdf(order_data: dict) -> str | None:
 
     # Определяем имя шрифта для использования (DejaVu или Arial)
     font_family = 'DejaVu' if use_dejavu else 'Arial'
-
+    
     # Заголовок
     pdf.set_font(font_family, 'B', 16) # Используем жирный стиль выбранного шрифта
     pdf.cell(0, 10, 'Заказ на бурение скважины', ln=True, align='C')
@@ -92,7 +92,7 @@ def generate_order_pdf(order_data: dict) -> str | None:
         pdf.cell(60, 10, item[0], border=0)
         pdf.cell(0, 10, item[1], border=0, ln=True)
     pdf.ln(5)
-
+    
     # Оборудование
     equipment_details = order_data.get("equipment_details", []) # Эта переменная сейчас не используется, но оставим
     adapter_info = order_data.get("adapter_info", {})
