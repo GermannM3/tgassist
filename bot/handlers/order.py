@@ -121,8 +121,13 @@ async def process_contact_info(message: Message, state: FSMContext, bot: Bot):
     
     # Генерация PDF с деталями заказа
     try:
-    pdf_path = generate_order_pdf(order_data)
-        pdf_exists = True
+        try:
+            pdf_path = generate_order_pdf(order_data)
+            pdf_exists = True
+        except Exception as e:
+            logging.error(f"Ошибка при создании PDF для заказа {order_id}: {e}")
+            pdf_path = None
+            pdf_exists = False
     except Exception as e:
         logging.error(f"Ошибка при создании PDF для заказа {order_id}: {e}")
         pdf_path = None
