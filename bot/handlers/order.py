@@ -151,12 +151,12 @@ async def process_contact_info(message: Message, state: FSMContext, bot: Bot):
     # Отправка PDF-файла пользователю, если он создан
     if pdf_exists and pdf_path:
         try:
-        await message.answer_document(
+            await message.answer_document(
                 document=FSInputFile(pdf_path),
-            caption=f"📄 Детали заказа #{order_id}"
-        )
+                caption=f"📄 Детали заказа #{order_id}"
+            )
         except Exception as e:
-             logging.error(f"Ошибка при отправке PDF пользователю {message.from_user.id} для заказа {order_id}: {e}")
+            logging.error(f"Ошибка при отправке PDF пользователю {message.from_user.id} для заказа {order_id}: {e}")
 
     # Формирование сообщения для менеджера
     manager_message = (
