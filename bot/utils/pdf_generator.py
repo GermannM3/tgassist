@@ -94,22 +94,14 @@ def generate_order_pdf(order_data: dict) -> str | None:
     pdf.ln(5)
     
     # Оборудование
-    equipment_details = order_data.get("equipment_details", []) # Эта переменная сейчас не используется, но оставим
-    adapter_info = order_data.get("adapter_info", {})
-    caisson_info = order_data.get("caisson_info", {})
+    equipment_name = order_data.get("equipment_name", "Не выбрано")
+    equipment_price = order_data.get("equipment_price", 0)
 
-    if adapter_info or caisson_info:
+    if equipment_name and equipment_name != "Не выбрано":
         pdf.set_font(font_family, 'B', 14)
         pdf.cell(0, 10, 'Выбранное оборудование:', ln=True)
         pdf.set_font(font_family, '', 12)
-
-        if adapter_info:
-            pdf.cell(0, 10, f"Адаптер: {adapter_info.get('name', 'Не указан')} - {adapter_info.get('price', 0)} ₽", ln=True)
-
-        if caisson_info:
-            pdf.cell(0, 10, f"Кессон: {caisson_info.get('name', 'Не указан')} - {caisson_info.get('price', 0)} ₽", ln=True)
-
-        pdf.cell(0, 10, f"Стоимость оборудования: {str(order_data.get('equipment_cost', 0))} ₽", ln=True)
+        pdf.cell(0, 10, f"{equipment_name} - {equipment_price} ₽", ln=True)
         pdf.ln(5)
 
     # Общая стоимость

@@ -104,25 +104,27 @@ async def process_contact_info(message: Message, state: FSMContext, bot: Bot):
         "ground_type": data.get("ground_type", "Неизвестный"),
         "price_per_meter": data.get("price_per_meter", 0),
         "drilling_cost": data.get("drilling_cost", 0),
-        "equipment_cost": data.get("equipment_cost", 0),
+        "equipment_name": data.get("equipment_name", "Не выбрано"), # Используем новое поле
+        "equipment_price": data.get("equipment_price", 0), # Используем новое поле
         "total_cost": data.get("total_cost", 0),
-        "selected_equipment": data.get("selected_equipment", {}),
-        "equipment_details": data.get("equipment_details", []),
-        "adapter_info": data.get("adapter_info", {}),
-        "caisson_info": data.get("caisson_info", {}),
-        "selected_adapter": data.get("selected_adapter", {}),
-        "selected_caisson": data.get("selected_caisson", {}),
+        # Старые поля удалены
+        # "selected_equipment": data.get("selected_equipment", {}),
+        # "equipment_details": data.get("equipment_details", []),
+        # "adapter_info": data.get("adapter_info", {}),
+        # "caisson_info": data.get("caisson_info", {}),
+        # "selected_adapter": data.get("selected_adapter", {}),
+        # "selected_caisson": data.get("selected_caisson", {}),
         "order_date": order_date,
         "status": "new"
     }
-    
+
     # Сохранение заказа в JSON
     save_order(order_data)
-    
+
     # Генерация PDF с деталями заказа
     try:
         try:
-            pdf_path = generate_order_pdf(order_data)
+            pdf_path = generate_order_pdf(order_data) # Передаем обновленный order_data
             pdf_exists = True
         except Exception as e:
             logging.error(f"Ошибка при создании PDF для заказа {order_id}: {e}")
@@ -132,7 +134,7 @@ async def process_contact_info(message: Message, state: FSMContext, bot: Bot):
         logging.error(f"Ошибка при создании PDF для заказа {order_id}: {e}")
         pdf_path = None
         pdf_exists = False
-    
+
     # Формирование сообщения для пользователя
     user_message = (
         f"✅ <b>Заказ #{order_id} успешно оформлен!</b>\n\n"
@@ -140,14 +142,16 @@ async def process_contact_info(message: Message, state: FSMContext, bot: Bot):
         f"🏙️ Район: {district_name}\n"
         f"📏 Глубина: {order_data.get('depth')} м\n"
         f"🧱 Тип грунта: {order_data.get('ground_type')}\n"
+        # Добавляем информацию о выбранном оборудовании
+        f"🔧 Оборудование: {order_data.get('equipment_name')} ({order_data.get('equipment_price')} ₽)\n"
         f"💰 Общая стоимость: {order_data.get('total_cost')} ₽\n\n"
         f"📞 Контактный телефон: {order_data.get('phone')}\n\n"
         f"Наш менеджер свяжется с вами в ближайшее время для подтверждения заказа."
     )
-    
+
     # Отправка сообщения пользователю
     await message.answer(user_message, parse_mode='HTML')
-    
+
     # Отправка PDF-файла пользователю, если он создан
     if pdf_exists and pdf_path:
         try:
@@ -168,16 +172,16 @@ async def process_contact_info(message: Message, state: FSMContext, bot: Bot):
         f"📏 <b>Глубина:</b> {order_data.get('depth')} м\n"
         f"🧱 <b>Тип грунта:</b> {order_data.get('ground_type')}\n"
         f"💰 <b>Стоимость бурения:</b> {order_data.get('drilling_cost')} ₽\n"
+        # Используем новые поля для оборудования
+        f"🔧 <b>Оборудование:</b> {order_data.get('equipment_name')} ({order_data.get('equipment_price')} ₽)\n"
+        # Старая логика с equipment_details удалена
+        # if order_data.get('equipment_details'):
+        #     manager_message += f"\n🔧 <b>Оборудование:</b>\n"
+        #     for detail in order_data.get('equipment_details'):
+        #         manager_message += f"- {detail}\n"
+        #     manager_message += f"💰 <b>Стоимость оборудования:</b> {order_data.get('equipment_cost')} ₽\n"
+        f"\n💰 <b>Общая стоимость:</b> {order_data.get('total_cost')} ₽"
     )
-    
-    # Добавляем информацию об оборудовании, если есть
-    if order_data.get('equipment_details'):
-        manager_message += f"\n🔧 <b>Оборудование:</b>\n"
-        for detail in order_data.get('equipment_details'):
-            manager_message += f"- {detail}\n"
-        manager_message += f"💰 <b>Стоимость оборудования:</b> {order_data.get('equipment_cost')} ₽\n"
-        
-    manager_message += f"\n💰 <b>Общая стоимость:</b> {order_data.get('total_cost')} ₽"
 
     # Отправка уведомления менеджеру
     try:
