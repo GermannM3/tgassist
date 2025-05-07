@@ -171,5 +171,84 @@ async def back_to_depth_from_confirm_handler(callback: CallbackQuery, state: FSM
     await send_depth_selection(callback.message, state) 
     await callback.answer()
 
+@router.message(OrderStates.entering_name)
+async def handle_entering_name(message: Message, state: FSMContext):
+    """Обрабатывает ввод ФИО пользователя."""
+    full_name = message.text.strip()
+    if not full_name:
+        await message.answer("Пожалуйста, введите корректное ФИО.")
+        return
+    await state.update_data(full_name=full_name)
+    await state.set_state(OrderStates.entering_phone)
+    await message.answer("📱 Пожалуйста, введите ваш номер телефона:")
+
+@router.message(OrderStates.entering_phone)
+async def handle_entering_phone(message: Message, state: FSMContext):
+    """Обрабатывает ввод номера телефона пользователя и завершает заказ."""
+    phone = message.text.strip()
+    if not phone or len(phone) < 7:
+        await message.answer("Пожалуйста, введите корректный номер телефона.")
+        return
+    await state.update_data(phone=phone)
+    data = await state.get_data()
+    # Формируем итоговое сообщение с подтверждением заказа
+    summary = (
+        f"✅ <b>Ваш заказ оформлен!</b>\n\n"
+        f"👤 <b>ФИО:</b> {data.get('full_name', 'Не указано')}\n"
+        f"📱 <b>Телефон:</b> {data.get('phone', 'Не указан')}\n\n"
+        f"📍 <b>Район:</b> {data.get('district_name', 'Не указан')}\n"
+        f"📏 <b>Глубина:</b> {data.get('depth', 0)} м (Грунт: {data.get('ground_type', 'Неизвестный')})\n"
+        f"💰 <b>Стоимость бурения:</b> {data.get('drilling_cost', 0)} ₽ (Цена за метр: {data.get('price_per_meter', 0)} ₽)\n\n"
+        f"🔧 <b>Выбранное оборудование:</b> {data.get('equipment_name', 'Не выбрано')} ({data.get('equipment_price', 0)} ₽)\n"
+        f"💲 <b>Стоимость оборудования:</b> {data.get('equipment_price', 0)} ₽\n"
+        f"<b>ИТОГО: {data.get('total_cost', 0)} ₽</b>\n\n"
+        f"Спасибо за заказ! Наш менеджер свяжется с вами для подтверждения."
+    )
+    await state.clear()
+    await message.answer(summary, parse_mode='HTML')
+    await callback.answer()
+
+# --- Обработчик кнопки "Изменить оборудование" --- 
+
+@router.callback_query(F.data == "select_equipment") # Обрабатываем callback от кнопки "Изменить оборудование"
+async def edit_equipment_handler(callback: CallbackQuery, state: FSMContext):
+    """Возврат к выбору оборудования из экрана подтверждения."""
+    # Просто показываем снова опции оборудования
+    await state.set_state(OrderStates.selecting_equipment)
+    try:
+        await callback.message.edit_text(
+            "🔧 <b>Выберите вариант оборудования:</b>",
+            reply_markup=get_simplified_equipment_keyboard(),
+            parse_mode='HTML'
+        )
+    except Exception as e:
+        logging.error(f"Ошибка при редактировании сообщения для изменения оборудования: {e}")
+        await callback.message.answer(
+            "🔧 <b>Выберите вариант оборудования:</b>",
+            reply_markup=get_simplified_equipment_keyboard(),
+            parse_mode='HTML'
+        )
+    await callback.answer()
+
+# --- Обработчик кнопки "Назад (к глубине)" --- 
+
+@router.callback_query(F.data == "back_to_depth")
+async def back_to_depth_handler(callback: CallbackQuery, state: FSMContext):
+    """Возврат к выбору глубины из меню оборудования."""
+    from bot.handlers.depth import send_depth_selection # Импорт внутри функции
+    await state.set_state(OrderStates.selecting_depth)
+    # Нужно передать message, а не callback.message для send_depth_selection
+    await send_depth_selection(callback.message, state) 
+    await callback.answer()
+
+@router.callback_query(F.data == "back_to_depth_from_confirm")
+async def back_to_depth_from_confirm_handler(callback: CallbackQuery, state: FSMContext):
+    """Возврат к выбору глубины из меню подтверждения."""
+    from bot.handlers.depth import send_depth_selection # Импорт внутри функции
+    await state.set_state(OrderStates.selecting_depth)
+    # Нужно передать message, а не callback.message для send_depth_selection
+    await send_depth_selection(callback.message, state) 
+    await callback.answer()
+
 # Старые обработчики удалены
 
