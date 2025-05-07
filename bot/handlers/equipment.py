@@ -119,17 +119,15 @@ async def show_order_summary(callback: CallbackQuery, state: FSMContext):
         f"  - {equipment_name} ({equipment_price} ₽)\n\n"
         f"💲 <b>Стоимость оборудования:</b> {equipment_price} ₽\n"
         f"<b>ИТОГО: {total_cost} ₽</b>\n\n"
-        f"Для подтверждения заказа введите ваше ФИО."
+        f"Пожалуйста, введите ваше ФИО для оформления заказа."
     )
 
     await state.set_state(OrderStates.entering_name)
-    # Используем edit_text для обновления сообщения
     try:
-        await callback.message.edit_text(summary, reply_markup=get_confirm_order_keyboard(), parse_mode='HTML')
+        await callback.message.edit_text(summary, parse_mode='HTML')
     except Exception as e:
         logging.error(f"Ошибка при редактировании сообщения для подтверждения: {e}")
-        # Если редактирование не удалось, отправляем новое сообщение
-        await callback.message.answer(summary, reply_markup=get_confirm_order_keyboard(), parse_mode='HTML')
+        await callback.message.answer(summary, parse_mode='HTML')
 
 # --- Обработчик кнопки "Изменить оборудование" --- 
 
