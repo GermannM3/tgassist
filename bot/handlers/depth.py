@@ -83,14 +83,25 @@ async def process_depth_selection(callback: CallbackQuery, state: FSMContext):
         total_cost=drilling_cost  # Начальная общая стоимость равна стоимости бурения
     )
     
-    # Переход к выбору оборудования
-    await state.set_state(OrderStates.selecting_equipment)
+    # Переход к выбору типа техники
+    await state.set_state(OrderStates.selecting_equipment_type)
     
-    # Импорт здесь для избежания циклических импортов
-    from bot.handlers.equipment import send_equipment_selection
+    # Создаем клавиатуру для выбора техники
+    from aiogram.utils.keyboard import InlineKeyboardBuilder
+    builder = InlineKeyboardBuilder()
+    builder.button(text="УРБ (3200 ₽/м)", callback_data="equipment_type_urb")
+    builder.button(text="МГБУ (3500 ₽/м)", callback_data="equipment_type_mgbu")
+    builder.adjust(1)
     
+    await callback.message.edit_text(
+        f"🚜 <b>Выберите тип техники для бурения:</b>\n\n"
+        f"📍 <b>Район:</b> {district_name}\n"
+        f"📏 <b>Глубина:</b> {depth} м (Грунт: {ground_type})\n"
+        f"💰 <b>Базовая стоимость бурения:</b> {drilling_cost} ₽",
+        reply_markup=builder.as_markup(),
+        parse_mode='HTML'
+    )
     await callback.answer()
-    await send_equipment_selection(callback.message, state)
 
 @router.callback_query(F.data == "back_to_districts")
 async def back_to_districts(callback: CallbackQuery, state: FSMContext):

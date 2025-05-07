@@ -17,18 +17,26 @@ from bot.keyboards.common_kb import get_cancel_keyboard
 router = Router()
 
 async def send_equipment_selection(message: Message, state: FSMContext):
-    """Отправляет сообщение с выбором оборудования."""
+    """Отправляет сообщение с выбором типа техники."""
     await message.answer(
-        "🔧 <b>Выберите вариант оборудования:</b>",
-        reply_markup=get_simplified_equipment_keyboard(),
+        "🚜 <b>Выберите тип техники:</b>",
+        reply_markup=get_equipment_type_keyboard(),
         parse_mode='HTML'
     )
-    await state.set_state(OrderStates.selecting_equipment)
+    await state.set_state(OrderStates.selecting_equipment_type)
 
 def calculate_total_cost(data: dict) -> int:
     """Рассчитывает общую стоимость заказа."""
-    drilling_cost = data.get('drilling_cost', 0)
-    equipment_cost = data.get('equipment_price', 0) # Используем equipment_price
+    equipment_cost = data.get('equipment_price', 0)
+    equipment_type = data.get('equipment_type', 'urb')
+    depth = data.get('depth', 0)
+    
+    # Пересчитываем стоимость бурения в зависимости от типа техники
+    if equipment_type == 'mgbu':
+        drilling_cost = 3500 * depth
+    else:
+        drilling_cost = 3200 * depth
+        
     return drilling_cost + equipment_cost
 
 async def show_equipment_options(message: Message, state: FSMContext):
@@ -41,6 +49,21 @@ async def show_equipment_options(message: Message, state: FSMContext):
     await state.set_state(OrderStates.selecting_equipment)
 
 # --- Обработчик выбора опции оборудования --- 
+
+@router.callback_query(OrderStates.selecting_equipment_type, F.data.startswith("equipment_type_"))
+async def select_equipment_type(callback: CallbackQuery, state: FSMContext):
+    """Обрабатывает выбор типа техники."""
+    equipment_type = callback.data.split("_")[-1]
+    await state.update_data(equipment_type=equipment_type)
+    
+    # Переходим к выбору конкретного оборудования
+    await callback.message.edit_text(
+        "🔧 <b>Выберите вариант оборудования:</b>",
+        reply_markup=get_simplified_equipment_keyboard(),
+        parse_mode='HTML'
+    )
+    await state.set_state(OrderStates.selecting_equipment)
+    await callback.answer()
 
 @router.callback_query(OrderStates.selecting_equipment, F.data.startswith("select_equipment_"))
 async def select_equipment_option(callback: CallbackQuery, state: FSMContext):
