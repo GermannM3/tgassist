@@ -28,6 +28,9 @@ class OrderStates(StatesGroup):
     # Ввод ФИО
     entering_name = State()
     
+    # Ввод номера телефона
+    entering_phone = State()
+    
     # Завершение заказа
     completing_order = State()
 
