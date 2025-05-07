@@ -16,6 +16,15 @@ from bot.keyboards.common_kb import get_cancel_keyboard
 # Создание роутера
 router = Router()
 
+async def send_equipment_selection(message: Message, state: FSMContext):
+    """Отправляет сообщение с выбором оборудования."""
+    await message.answer(
+        "🔧 <b>Выберите вариант оборудования:</b>",
+        reply_markup=get_simplified_equipment_keyboard(),
+        parse_mode='HTML'
+    )
+    await state.set_state(OrderStates.selecting_equipment)
+
 def calculate_total_cost(data: dict) -> int:
     """Рассчитывает общую стоимость заказа."""
     drilling_cost = data.get('drilling_cost', 0)
