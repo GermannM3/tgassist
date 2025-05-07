@@ -10,6 +10,9 @@ class OrderStates(StatesGroup):
     # Выбор глубины
     selecting_depth = State()
     
+    # Выбор типа техники
+    selecting_equipment_type = State()
+    
     # Выбор оборудования
     selecting_equipment = State()
     
