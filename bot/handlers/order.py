@@ -180,30 +180,43 @@ async def process_contact_info(message: Message, state: FSMContext, bot: Bot):
     # Логируем попытку отправки уведомления менеджеру
     logging.info(f"Попытка отправки уведомления о заказе #{order_id} в канал {MANAGER_CHANNEL_ID}")
     logging.info(f"Попытка отправки уведомления о заказе #{order_id} в канал @cargptgroza")
+    logging.info(f"Bot object: {bot}")
+    logging.info(f"Manager message: {manager_message}")
 
     # Отправка уведомления менеджеру
     try:
-        await bot.send_message("@cargptgroza", manager_message, parse_mode='HTML')
+        logging.info(f"Отправка сообщения в канал @cargptgroza для заказа {order_id}")
+        sent_message = await bot.send_message("@cargptgroza", manager_message, parse_mode='HTML')
+        logging.info(f"Сообщение успешно отправлено, message_id: {sent_message.message_id}")
+        
         # Отправка PDF менеджеру, если он создан
         if pdf_exists and pdf_path:
-             await bot.send_document(
-                 "@cargptgroza",
-                 document=FSInputFile(pdf_path),
-                 caption=f"\ud83d\udcc4 Детали заказа #{order_id} для менеджера"
-             )
-    except Exception as e:
-        logging.error(f"Ошибка при отправке уведомления менеджеру в канал {MANAGER_CHANNEL_ID} для заказа {order_id}: {e}")
-    # Попытка отправки по username канала
-    try:
-        await bot.send_message("@cargptgroza", manager_message, parse_mode='HTML')
-        if pdf_exists and pdf_path:
-            await bot.send_document(
+            logging.info(f"Отправка PDF документа для заказа {order_id}")
+            sent_document = await bot.send_document(
                 "@cargptgroza",
                 document=FSInputFile(pdf_path),
                 caption=f"\ud83d\udcc4 Детали заказа #{order_id} для менеджера"
             )
+            logging.info(f"PDF успешно отправлен, document_id: {sent_document.document.file_id}")
     except Exception as e:
-        logging.error(f"Ошибка при отправке уведомления менеджеру в канал @cargptgroza для заказа {order_id}: {e}")
+        logging.error(f"Ошибка при отправке уведомления менеджеру в канал {MANAGER_CHANNEL_ID} для заказа {order_id}: {str(e)}", exc_info=True)
+    
+    # Попытка отправки по username канала
+    try:
+        logging.info(f"Попытка отправки сообщения в канал по username для заказа {order_id}")
+        sent_message = await bot.send_message("@cargptgroza", manager_message, parse_mode='HTML')
+        logging.info(f"Сообщение успешно отправлено по username, message_id: {sent_message.message_id}")
+        
+        if pdf_exists and pdf_path:
+            logging.info(f"Попытка отправки PDF по username для заказа {order_id}")
+            sent_document = await bot.send_document(
+                "@cargptgroza",
+                document=FSInputFile(pdf_path),
+                caption=f"\ud83d\udcc4 Детали заказа #{order_id} для менеджера"
+            )
+            logging.info(f"PDF успешно отправлен по username, document_id: {sent_document.document.file_id}")
+    except Exception as e:
+        logging.error(f"Ошибка при отправке уведомления менеджеру в канал @cargptgroza для заказа {order_id}: {str(e)}", exc_info=True)
     
     # Сброс состояния
     await state.clear()
