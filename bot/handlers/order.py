@@ -185,11 +185,11 @@ async def process_contact_info(message: Message, state: FSMContext, bot: Bot):
 
     # Отправка уведомления менеджеру
     try:
-        await bot.send_message(MANAGER_CHANNEL_ID, manager_message, parse_mode='HTML')
+        await bot.send_message(-1001910234699, manager_message, parse_mode='HTML')
         # Отправка PDF менеджеру, если он создан
         if pdf_exists and pdf_path:
              await bot.send_document(
-                 MANAGER_CHANNEL_ID,
+                 -1001910234699,
                  document=FSInputFile(pdf_path),
                  caption=f"📄 Детали заказа #{order_id} для менеджера"
              )
