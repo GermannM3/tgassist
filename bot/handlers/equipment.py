@@ -206,7 +206,6 @@ async def handle_entering_phone(message: Message, state: FSMContext):
     )
     await state.clear()
     await message.answer(summary, parse_mode='HTML')
-    await callback.answer()
 
 # --- Обработчик кнопки "Изменить оборудование" --- 
 
