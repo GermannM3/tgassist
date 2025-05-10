@@ -174,14 +174,11 @@ async def process_contact_info(message: Message, state: FSMContext, bot: Bot):
         f"💰 <b>Стоимость бурения:</b> {order_data.get('drilling_cost')} ₽\n"
         # Используем новые поля для оборудования
         f"🔧 <b>Оборудование:</b> {order_data.get('equipment_name')} ({order_data.get('equipment_price')} ₽)\n"
-        # Старая логика с equipment_details удалена
-        # if order_data.get('equipment_details'):
-        #     manager_message += f"\n🔧 <b>Оборудование:</b>\n"
-        #     for detail in order_data.get('equipment_details'):
-        #         manager_message += f"- {detail}\n"
-        #     manager_message += f"💰 <b>Стоимость оборудования:</b> {order_data.get('equipment_cost')} ₽\n"
         f"\n💰 <b>Общая стоимость:</b> {order_data.get('total_cost')} ₽"
     )
+
+    # Логируем попытку отправки уведомления менеджеру
+    logging.info(f"Попытка отправки уведомления о заказе #{order_id} в канал {MANAGER_CHANNEL_ID}")
 
     # Отправка уведомления менеджеру
     try:
