@@ -179,6 +179,7 @@ async def process_contact_info(message: Message, state: FSMContext, bot: Bot):
 
     # Логируем попытку отправки уведомления менеджеру
     logging.info(f"Попытка отправки уведомления о заказе #{order_id} в канал {MANAGER_CHANNEL_ID}")
+    logging.info(f"Попытка отправки уведомления о заказе #{order_id} в канал @cargptgroza")
 
     # Отправка уведомления менеджеру
     try:
@@ -188,10 +189,21 @@ async def process_contact_info(message: Message, state: FSMContext, bot: Bot):
              await bot.send_document(
                  -1001910234699,
                  document=FSInputFile(pdf_path),
-                 caption=f"📄 Детали заказа #{order_id} для менеджера"
+                 caption=f"\ud83d\udcc4 Детали заказа #{order_id} для менеджера"
              )
     except Exception as e:
         logging.error(f"Ошибка при отправке уведомления менеджеру в канал {MANAGER_CHANNEL_ID} для заказа {order_id}: {e}")
+    # Попытка отправки по username канала
+    try:
+        await bot.send_message("@cargptgroza", manager_message, parse_mode='HTML')
+        if pdf_exists and pdf_path:
+            await bot.send_document(
+                "@cargptgroza",
+                document=FSInputFile(pdf_path),
+                caption=f"\ud83d\udcc4 Детали заказа #{order_id} для менеджера"
+            )
+    except Exception as e:
+        logging.error(f"Ошибка при отправке уведомления менеджеру в канал @cargptgroza для заказа {order_id}: {e}")
     
     # Сброс состояния
     await state.clear()
